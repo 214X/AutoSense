@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "AutoSense"
+version = "0.1.0"
+description = "RAG based car information assistant"
+authors = ["Burak Kuruçay <burakkurucaycse@gmail.com>"]
+readme = "README.md"
+packages = [{ include = "backend" }]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.115.2"
+uvicorn = { version = "^0.30.6", extras = ["standard"] }
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
