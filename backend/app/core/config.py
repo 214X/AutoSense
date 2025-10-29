@@ -6,13 +6,13 @@ load_dotenv()
 
 class Settings(BaseModel):
     # app
-    APP_NAME: str = os.getenv("APP_NAME", "AutoSense API")
-    ENV: str = os.getenv("ENV", "dev")
-    HOST: str = os.getenv("HOST", "127.0.0.1")
-    PORT: int = int(os.getenv("PORT", "8000"))
+    APP_NAME: str = os.getenv("APP_NAME")
+    ENV: str = os.getenv("ENV")
+    HOST: str = os.getenv("HOST")
+    PORT: int = int(os.getenv("PORT"))
 
     # LLM / Ollama
-    OLLAMA_HOST: str = os.getenv("OLLAMA_HOST", "http://127.0.0.1:11434")
-    OLLAMA_MODEL: str = os.getenv("OLLAMA_MODEL", "llama3.2")
+    OLLAMA_HOST: str = os.getenv("OLLAMA_HOST")
+    OLLAMA_MODEL: str = os.getenv("OLLAMA_MODEL")
 
 settings = Settings()

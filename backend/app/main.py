@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 import uvicorn
 from dotenv import load_dotenv
+from .routers import chat
 
 load_dotenv()
 app = FastAPI(title="AutoSense API", version="0.1.0")
