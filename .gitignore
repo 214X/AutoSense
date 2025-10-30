@@ -17,6 +17,5 @@ __pycache__/
 indexes/
 data/processed/
 logs/
-
-
-
+__pycache__/
+*.py[cod]
