@@ -8,51 +8,72 @@ import requests
 from ..core.config import settings
 from ..providers.ollama_provider import OllamaProvider
 
-router = APIRouter(prefix="/api/chat", tags = ["chat"])
+# ROUTER
+router = APIRouter(prefix="/api/chat", tags=["chat"])
 
-# to keep the all messages
-HISTORY: List[Dict[str, str]] = []
+# CONSTANTS
+MAX_HISTORY_TURNS = 5
+SYSTEM_PROMPT = (
+    "Just keep the conversation."
+)
 
-# to distinguish the message sender
+# TYPES
 Role = Literal["assistant", "user"]
 
-
+# MODELS
 class ChatRequest(BaseModel):
     message: str = Field(..., min_length=1)
 
 class Message(BaseModel):
     role: Role
     content: str
-    timestamp: str
+    timestamp: str  # ISO-8601 UTC
 
 class ChatResponse(BaseModel):
     reply: Message
     history_len: int
 
+# LLM PROVIDER
 provider = OllamaProvider(
     model=settings.OLLAMA_MODEL,
     host=settings.OLLAMA_HOST,
 )
 
-SYSTEM_PROMPT = (
-    "System role: No role. Just keep the conversation going."
-    "Input information: Dialouge history will be given you."
-)
+# CHAT STORE CLASS
+class ChatStore:
+    """This class keeps the chat history."""
+    def __init__(self) -> None:
+        # [{"role": "...", "content": "...", "timestamp": "..."}]
+        self.history: List[Dict[str, str]] = []
 
-MAX_HISTORY_TURNS = 5
+    def append(self, role: Role, content: str) -> str:
+        ts = datetime.utcnow().isoformat()
+        self.history.append({"role": role, "content": content, "timestamp": ts})
+        return ts
 
-def get_context_history(history: List[Dict(str, str)], max_turns):
-    max_msgs = 2 * max_turns
-    return history[-max_msgs:] if (len(history) > max_msgs) else history
+    def get_length(self) -> int:
+        return len(self.history)
 
-def build_prompt(history: List[Dict[str, str]], user_msg: str, max_history_turns: int):
-    lines = [f"Systeme: {SYSTEM_PROMPT}", ""]
-    context_history = get_context_history(history, max_history_turns)
+    def clear(self) -> None:
+        self.history.clear()
+
+    def get_chat_history(self, turns: int) -> List[Dict[str, str]]:
+        max_msgs = 2 * turns
+        if len(self.history) > max_msgs:
+            return self.history[-max_msgs:]
+        return self.history
+
+chat_store = ChatStore()
+
+# UTILS
+def build_prompt(store: ChatStore, user_msg: str, max_history_turns: int) -> str:
+    lines = [f"System: {SYSTEM_PROMPT}", ""]
+    context_history = store.get_chat_history(max_history_turns)
     for turn in context_history:
         lines.append(f"{turn['role'].capitalize()}: {turn['content']}")
     lines.append(f"User: {user_msg}")
+    lines.append("Assistant:")  # modelin cevabı için doğal tamamlayıcı
     return "\n".join(lines)
-
 
 # ENDPOINTS
 @router.get("/ping")
@@ -61,7 +82,7 @@ def ping():
 
 @router.post("/send", response_model=ChatResponse)
 def send(req: ChatRequest):
-    prompt = build_prompt(HISTORY, req.message, MAX_HISTORY_TURNS)
+    prompt = build_prompt(chat_store, req.message, MAX_HISTORY_TURNS)
     try:
         answer = provider.generate(prompt)
     except requests.exceptions.RequestException as e:
@@ -69,17 +90,17 @@ def send(req: ChatRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) from e
 
-    now = datetime.utcnow().isoformat()
-
-    HISTORY.append({"role": "user", "content": req.message, "timestamp": now})
-    HISTORY.append({"role": "assistant", "content": answer, "timestamp": datetime.utcnow().isoformat()})
+    # store the user message
+    chat_store.append("user", req.message)
+    # store the modal response
+    ts_assistant = chat_store.append("assistant", answer)
 
     return ChatResponse(
-        reply=Message(role="assistant", content=answer, timestamp=now),
-        history_len=len(HISTORY),
+        reply=Message(role="assistant", content=answer, timestamp=ts_assistant),
+        history_len=chat_store.get_length(),
     )
 
 @router.post("/reset")
 def reset():
-    HISTORY.clear()
+    chat_store.clear()
     return {"ok": True, "history_len": 0}
