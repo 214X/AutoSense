@@ -16,7 +16,7 @@ class OllamaProvider(LLMProvider):
 
     def stream(self, prompt: str, **kwargs) -> Iterable[str]:
         payload = {"model": self.model, "prompt": prompt, "stream": True} | kwargs
-        with requests.post(self.url, json=payload, stream=True, timeout=0) as r:
+        with requests.post(self.url, json=payload, stream=True, timeout=300) as r:
             r.raise_for_status()
             for line in r.iter_lines(decode_unicode=True):
                 if not line:

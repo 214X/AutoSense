@@ -3,7 +3,10 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 from typing import List, Dict, Literal
 from datetime import datetime
+from fastapi.responses import StreamingResponse
+from typing import Iterator
 import requests
+
 
 from ..core.config import settings
 from ..providers.ollama_provider import OllamaProvider
@@ -104,3 +107,25 @@ def send(req: ChatRequest):
 def reset():
     chat_store.clear()
     return {"ok": True, "history_len": 0}
+
+@router.post("/stream")
+def stream(req: ChatRequest):
+    accumulator: list[str] = []
+
+    def event_source() -> Iterator[bytes]:
+        try:
+            prompt = build_prompt(chat_store, req.message, MAX_HISTORY_TURNS)
+            for chunk in provider.stream(prompt):
+                text = str(chunk)
+                accumulator.append(text)
+                yield f"data: {text}\n\n".encode("utf-8")
+        except requests.exceptions.RequestException as e:
+            yield f"event: error\ndata: Ollama connection error: {e}\n\n".encode("utf-8")
+        except Exception as e:
+            yield f"event: error\ndata: {str(e)}\n\n".encode("utf-8")
+        else: # stream completed successfully
+            chat_store.append("user", req.message)
+            chat_store.append("assistant", "".join(accumulator))
+
+    return StreamingResponse(event_source(), media_type="text/event-stream")
+
