@@ -1,0 +1,19 @@
+# python cache
+__pycache__/
+*.pyc
+
+# poetry virtual environment
+.venv/
+
+# environment files
+.env
+.env.*
+
+# IDE settings
+.vscode/
+.idea/
+
+# compiled / creted files
+indexes/
+data/processed/
+logs/
