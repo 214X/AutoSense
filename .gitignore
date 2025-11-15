@@ -36,6 +36,17 @@ __pycache__/
 # === FRONTEND ===
 frontend/node_modules/
 frontend/dist/
+frontend/dist-ssr/
+
+# Environment files
+frontend/.env
+frontend/.env.*
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.production.local
+frontend/.env.test.local
+
+# System files
 frontend/.DS_Store
 
 # === SYSTEM ===
