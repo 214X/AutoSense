@@ -1,19 +1,53 @@
-# python cache
+# === PYTHON BACKEND ===
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
 
-# poetry virtual environment
+# Virtual environments
 .venv/
-
-# environment files
 .env
 .env.*
 
-# IDE settings
+# Poetry & cache
+poetry.lock
+*.egg-info/
+*.egg
+*.manifest
+*.spec
+
+# Logs and temp
+logs/
+*.log
+data/processed/
+indexes/
+__pycache__/
+.DS_Store
+
+# IDEs
 .vscode/
 .idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 
-# compiled / creted files
-indexes/
-data/processed/
-logs/
+# === FRONTEND ===
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+
+# Environment files
+frontend/.env
+frontend/.env.*
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.production.local
+frontend/.env.test.local
+
+# System files
+frontend/.DS_Store
+
+# === SYSTEM ===
+Thumbs.db
