@@ -1,7 +1,7 @@
 export type Role = "user" | "assistant";
 
-export type ChatMessage = {
+export type ChatMessage {
     role: Role;
-    message: string;
+    content: string;
     timestamp: string;
 }

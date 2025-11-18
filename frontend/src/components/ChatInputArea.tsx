@@ -26,7 +26,7 @@ const ChatInputArea: React.FC<ChatIputAreaProps> = ({value, onChange, onSend}) =
                 />
                 <button
                     className="chat-send-button"
-                    onClick={onSend}
+                    onClick={onSend} 
                     disabled={!value.trim()}
                 >
                     Send
