@@ -1,4 +1,5 @@
 import React from "react";
+import ReactMarkdown from "react-markdown";
 
 type AssistantMessageBoxProps = {
     content: string;
@@ -7,7 +8,9 @@ type AssistantMessageBoxProps = {
 const AssistantMessageBox: React.FC<AssistantMessageBoxProps> = ({content}) => {
     return (
         <div className="assistant-message-box">
-            {content}
+            <ReactMarkdown>
+                {content}
+            </ReactMarkdown>
         </div>
     )
 }

@@ -1,4 +1,5 @@
 # === PYTHON BACKEND ===
+# Byte-compiled / cache
 __pycache__/
 *.pyc
 *.pyo
@@ -6,25 +7,74 @@ __pycache__/
 
 # Virtual environments
 .venv/
+venv/
+env/
+ENV/
+
+# Environment variables
 .env
 .env.*
+backend/.env
+backend/.env.*
 
-# Poetry & cache
+# Poetry & build artifacts
 poetry.lock
 *.egg-info/
 *.egg
 *.manifest
 *.spec
+build/
+dist/
 
-# Logs and temp
+# Logs & temp
 logs/
 *.log
+*.pid
+*.out
+*.tmp
+tmp/
 data/processed/
 indexes/
-__pycache__/
+
+# MacOS
 .DS_Store
 
-# IDEs
+
+# === GLOBAL NODE / PNPM ===
+# Workspace root node_modules + pnpm store
+node_modules/
+.pnpm-store/
+.pnpm-debug.log
+
+# Lockfiles
+pnpm-lock.yaml
+
+
+# === FRONTEND PROJECT ===
+# Frontend deps
+frontend/node_modules/
+frontend/.pnpm-store/
+
+# Frontend build output
+frontend/dist/
+frontend/dist-ssr/
+frontend/.vite/
+
+# Frontend environment files
+frontend/.env
+frontend/.env.*
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.production.local
+frontend/.env.test.local
+
+# Vite cache
+frontend/.vite/
+frontend/.cache/
+
+
+# === COMMON FRONTEND/EDITOR/TRASH ===
+# Editor settings
 .vscode/
 .idea/
 *.suo
@@ -33,21 +83,21 @@ __pycache__/
 *.sln
 *.sw?
 
-# === FRONTEND ===
-frontend/node_modules/
-frontend/dist/
-frontend/dist-ssr/
-
-# Environment files
-frontend/.env
-frontend/.env.*
-frontend/.env.local
-frontend/.env.development.local
-frontend/.env.production.local
-frontend/.env.test.local
-
-# System files
-frontend/.DS_Store
-
-# === SYSTEM ===
+# OS
+.DS_Store
 Thumbs.db
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+
+# === MISC ===
+# Python notebooks checkpoints
+.ipynb_checkpoints/
+
+# Local data
+*.sqlite
+*.db

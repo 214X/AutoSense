@@ -66,6 +66,9 @@ class ChatStore:
             return self.history[-max_msgs:]
         return self.history
 
+    def get_all_messages(self) -> List[Dict[str, str]]:
+        return self.history
+
 chat_store = ChatStore()
 
 # UTILS
@@ -128,4 +131,9 @@ def stream(req: ChatRequest):
             chat_store.append("assistant", "".join(accumulator))
 
     return StreamingResponse(event_source(), media_type="text/event-stream")
+
+@router.get('/fetch-previous-messages')
+def fetchPreviousMessages():
+    return chat_store.get_all_messages()
+
 
