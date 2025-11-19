@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 // Component imports
 import AssistantMessageBox from "../components/AssistantMessageBox";
 import UserMessageBox from "../components/UserMessageBox";
@@ -8,7 +8,6 @@ import ChatHeader from "../components/ChatHeader";
 import type { ChatMessage } from "../types/ChatMessage";
 
 // TODO: Create welcomer message and use it more clear and short code.
-// TODO: Messages should be start from the end follow the new ones
 // TODO: There is a some mistake in assitant message format. (I think it is about removing newline from the apicall response or markdown)
 
 const ChatPage: React.FC = () => {
@@ -20,7 +19,9 @@ const ChatPage: React.FC = () => {
             timestamp: new Date().toISOString(),
         }
     ]);
+    const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
+    // fetching
     useEffect(() => {
         const fetchHistory = async () => {
             try {
@@ -41,6 +42,13 @@ const ChatPage: React.FC = () => {
 
         fetchHistory();
     }, []);
+
+    // scroll handling
+    useEffect(
+        () => {
+            messagesEndRef.current?.scrollIntoView();
+        }, [messages]
+    );
 
     const handleSend = async () => {
         const trimmed = inputValue.trim();
@@ -150,6 +158,8 @@ const ChatPage: React.FC = () => {
                             <UserMessageBox key={index} content={message.content} />
                         )
                     ))}
+                    {/* ref for pointing to end of the mssages */}
+                    <div ref={messagesEndRef} />
                 </div>
             </div>
             {/* UserInputArea */}
